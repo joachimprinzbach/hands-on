@@ -30,7 +30,7 @@ public class PizzaOrderController {
 
     @GetMapping("/{id}")
     public PizzaOrder getPizzaOrderById(@PathVariable String id) {
-        return this.pizzaOrderService.findPizzaOrderByNameEquals(Integer.parseInt(id));
+        return this.pizzaOrderService.findPizzaOrderById(Integer.parseInt(id));
     }
 
     @PostMapping

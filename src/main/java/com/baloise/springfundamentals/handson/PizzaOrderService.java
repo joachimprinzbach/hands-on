@@ -28,7 +28,7 @@ public class PizzaOrderService {
         return pizzaOrderRepository.findPizzaOrdersByNameEqualsOrderByIdDesc(pizzaName);
     }
 
-    public PizzaOrder findPizzaOrderByNameEquals(Integer id) {
+    public PizzaOrder findPizzaOrderById(Integer id) {
         Optional<PizzaOrder> potentiallyFoundOrder = pizzaOrderRepository.findById(id);
         return potentiallyFoundOrder.orElseThrow(() -> new IllegalArgumentException("Order with id: " + id + " not found."));
     }
