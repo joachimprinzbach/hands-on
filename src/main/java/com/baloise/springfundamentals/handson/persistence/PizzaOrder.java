@@ -1,57 +1,18 @@
-package com.baloise.springfundamentals.handson.persistence;
+package com.baloise.springfundamentals.handson;
 
-import javax.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.util.List;
-import java.util.Objects;
 
-@Entity
-@Table(name = "pizzaOrders")
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class PizzaOrder {
 
-    @Id
-    @GeneratedValue
     private Integer id;
-    @OneToMany(mappedBy = "pizzaOrder", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<PizzaOrderItem> pizzaOrderItems;
+    private String name;
+    private List<String> additionalIngredients;
 
-    public PizzaOrder() {
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public List<PizzaOrderItem> getPizzaOrderItems() {
-        return pizzaOrderItems;
-    }
-
-    public void setPizzaOrderItems(List<PizzaOrderItem> pizzaOrderItems) {
-        this.pizzaOrderItems = pizzaOrderItems;
-    }
-
-    @Override
-    public String toString() {
-        return "PizzaOrder{" +
-                "id='" + id + '\'' +
-                ", pizzaOrderItems=" + pizzaOrderItems +
-                '}';
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        PizzaOrder that = (PizzaOrder) o;
-        return Objects.equals(id, that.id) &&
-                Objects.equals(pizzaOrderItems, that.pizzaOrderItems);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, pizzaOrderItems);
-    }
 }

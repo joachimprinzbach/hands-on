@@ -1,35 +1,38 @@
 package com.baloise.springfundamentals.handson;
 
-import com.baloise.springfundamentals.handson.persistence.PizzaOrder;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("pizza-orders")
+@RequiredArgsConstructor
 public class PizzaOrderController {
 
     private final PizzaOrderService pizzaOrderService;
 
-    @Autowired
-    public PizzaOrderController(PizzaOrderService pizzaOrderService) {
-        this.pizzaOrderService = pizzaOrderService;
-    }
-
     @GetMapping
-    public List<PizzaOrder> getPizzaOrders(@RequestParam Optional<String> name) {
-        if (name.isPresent()) {
-            return this.pizzaOrderService.findByPizzaOrderItemName(name.get());
+    public List<PizzaOrder> getPizzaOrders(@RequestParam Optional<String> pizzaName) {
+        if (pizzaName.isPresent()) {
+            return this.pizzaOrderService.getPizzaOrders()
+                    .stream()
+                    .filter(o -> o.getName().equals(pizzaName))
+                    .collect(Collectors.toList());
         }
         return this.pizzaOrderService.getPizzaOrders();
     }
 
     @GetMapping("/{id}")
     public PizzaOrder getPizzaOrderById(@PathVariable String id) {
-        return this.pizzaOrderService.getById(Integer.parseInt(id));
+        return this.pizzaOrderService.getPizzaOrders()
+                .stream()
+                .filter(o -> o.getId().equals(Integer.parseInt(id)))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Order with id: " + id + " not found."));
     }
 
     @PostMapping

@@ -1,48 +1,37 @@
 package com.baloise.springfundamentals.handson;
 
 import com.baloise.springfundamentals.handson.inventory.PizzaInventoryService;
-import com.baloise.springfundamentals.handson.persistence.PizzaOrder;
-import com.baloise.springfundamentals.handson.persistence.PizzaOrderRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class PizzaOrderService {
 
     private final PizzaInventoryService pizzaInventoryService;
-    private final PizzaOrderRepository pizzaOrderRepository;
 
-    @Autowired
-    public PizzaOrderService(PizzaInventoryService pizzaInventoryService, PizzaOrderRepository pizzaOrderRepository) {
-        this.pizzaInventoryService = pizzaInventoryService;
-        this.pizzaOrderRepository = pizzaOrderRepository;
-    }
+    private static final List<PizzaOrder> PIZZA_ORDERS = new ArrayList<>(Arrays.asList(
+            new PizzaOrder(1, "Salami", Arrays.asList("Mushrooms", "Kangaroo")),
+            new PizzaOrder(2, "Funghi", Collections.emptyList()),
+            new PizzaOrder(3, "Hawai", Collections.emptyList()),
+            new PizzaOrder(5, "Margherita", Arrays.asList("Mushrooms", "Onions", "Salami", "Extra Cheese"))
+    ));
 
     public List<PizzaOrder> getPizzaOrders() {
-        return pizzaOrderRepository.findAll();
-    }
-
-    public List<PizzaOrder> findByPizzaOrderItemName(String name) {
-        return pizzaOrderRepository.findCustomByPizzaOrderItemName(name);
-    }
-
-    public PizzaOrder getById(Integer id) {
-        Optional<PizzaOrder> potentiallyFoundPizzaOrder = pizzaOrderRepository.findById(id);
-        return potentiallyFoundPizzaOrder.orElseThrow(() -> new IllegalArgumentException("Order with id: " + id + " not found."));
+        return PIZZA_ORDERS;
     }
 
     public Integer create(PizzaOrder pizzaOrder) {
-        pizzaOrder.getPizzaOrderItems().forEach(orderItem -> {
-            boolean isAvailable = pizzaInventoryService.isAvailable(orderItem.getName());
-            if (!isAvailable) {
-                throw new IllegalStateException("Pizza " + orderItem.getName() + " is out of stock.");
-            }
-            orderItem.setPizzaOrder(pizzaOrder);
-        });
-        PizzaOrder savedOrder = pizzaOrderRepository.save(pizzaOrder);
-        return savedOrder.getId();
+        boolean isAvailable = pizzaInventoryService.isAvailable(pizzaOrder.getName());
+        if (!isAvailable) {
+            throw new IllegalStateException("Pizza " + pizzaOrder.getName() + " is out of stock.");
+        }
+        PIZZA_ORDERS.add(pizzaOrder);
+        return pizzaOrder.getId();
     }
 }

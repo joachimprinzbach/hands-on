@@ -2,12 +2,22 @@ POST http://localhost:8080/pizza-orders
 Content-Type: application/json
 
 {
-  "pizzaOrderItems": [
-    {
-      "name": "Prosciutto & Pineapple",
-      "quantity": 1
-    }
+  "id": 7,
+  "name": "Capri",
+  "additionalIngredients": [
+    "Extra Cheese",
+    "Scampi"
   ]
 }
+
+###
+
+GET http://localhost:8080/pizza-orders
+Content-Type: application/json
+
+###
+
+GET http://localhost:8080/pizza-orders/1
+Content-Type: application/json
 
 ###
