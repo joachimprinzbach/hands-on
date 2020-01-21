@@ -1,6 +1,6 @@
 package com.baloise.springfundamentals.handson;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,21 +10,17 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("pizza-orders")
+@RequiredArgsConstructor
 public class PizzaOrderController {
 
     private final PizzaOrderService pizzaOrderService;
 
-    @Autowired
-    public PizzaOrderController(PizzaOrderService pizzaOrderService) {
-        this.pizzaOrderService = pizzaOrderService;
-    }
-
     @GetMapping
-    public List<PizzaOrder> getPizzaOrders(@RequestParam Optional<String> name) {
-        if (name.isPresent()) {
+    public List<PizzaOrder> getPizzaOrders(@RequestParam Optional<String> pizzaName) {
+        if (pizzaName.isPresent()) {
             return this.pizzaOrderService.getPizzaOrders()
                     .stream()
-                    .filter(o -> o.getPizzaOrderItems().stream().anyMatch(poi -> poi.getName().contains(name.get())))
+                    .filter(o -> o.getName().equals(pizzaName))
                     .collect(Collectors.toList());
         }
         return this.pizzaOrderService.getPizzaOrders();
@@ -34,14 +30,14 @@ public class PizzaOrderController {
     public PizzaOrder getPizzaOrderById(@PathVariable String id) {
         return this.pizzaOrderService.getPizzaOrders()
                 .stream()
-                .filter(o -> o.getId().equals(id))
+                .filter(o -> o.getId().equals(Integer.parseInt(id)))
                 .findFirst()
                 .orElseThrow(IllegalArgumentException::new);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public String createPizzaOrder(@RequestBody PizzaOrder pizzaOrder) {
+    public Integer createPizzaOrder(@RequestBody PizzaOrder pizzaOrder) {
         return pizzaOrderService.create(pizzaOrder);
     }
 }
