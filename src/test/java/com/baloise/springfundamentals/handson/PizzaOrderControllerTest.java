@@ -1,6 +1,7 @@
 package com.baloise.springfundamentals.handson;
 
 import com.baloise.springfundamentals.handson.persistence.PizzaOrder;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
@@ -20,7 +21,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@ExtendWith(SpringExtension.class)
 @WebMvcTest(PizzaOrderController.class)
 class PizzaOrderControllerTest {
 
@@ -30,20 +30,19 @@ class PizzaOrderControllerTest {
     @MockBean
     private PizzaOrderService pizzaOrderService;
 
+    @Autowired
+    private ObjectMapper objectMapper;
+
     @Test
-    public void greetingShouldReturnMessageFromService() throws Exception {
-        doReturn(new PizzaOrder(10, "Salami", Collections.emptyList()))
+    public void pizzaOrderWithId_200OK_correctPizzaOrder() throws Exception {
+        PizzaOrder salamiPizzaOrder = new PizzaOrder(10, "Salami", Collections.emptyList());
+        doReturn(salamiPizzaOrder)
                 .when(pizzaOrderService).findPizzaOrderById(10);
 
         this.mockMvc
                 .perform(get("/pizza-orders/10"))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(content().json("{\n" +
-                        "  " +
-                        "\"id\":10,\n" +
-                        "  \"name\":\"Salami\",\n" +
-                        "  \"additionalIngredients\":[]\n" +
-                        "}"));
+                .andExpect(content().json(objectMapper.writeValueAsString(salamiPizzaOrder)));
     }
 }
