@@ -36,7 +36,7 @@ public class PizzaOrderController {
                 .stream()
                 .filter(o -> o.getId().equals(id))
                 .findFirst()
-                .orElseThrow(IllegalArgumentException::new);
+                .orElseThrow(() -> new IllegalArgumentException("Order with id: " + id + " not found."));
     }
 
     @PostMapping
