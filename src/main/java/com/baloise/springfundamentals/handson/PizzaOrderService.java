@@ -1,12 +1,11 @@
 package com.baloise.springfundamentals.handson;
 
 import com.baloise.springfundamentals.handson.inventory.PizzaInventoryService;
+import com.baloise.springfundamentals.handson.persistence.PizzaOrder;
+import com.baloise.springfundamentals.handson.persistence.PizzaOrderRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -14,16 +13,18 @@ import java.util.List;
 public class PizzaOrderService {
 
     private final PizzaInventoryService pizzaInventoryService;
-
-    private static final List<PizzaOrder> PIZZA_ORDERS = new ArrayList<>(Arrays.asList(
-            new PizzaOrder(1, "Salami", Arrays.asList("Mushrooms", "Kangaroo")),
-            new PizzaOrder(2, "Funghi", Collections.emptyList()),
-            new PizzaOrder(3, "Hawai", Collections.emptyList()),
-            new PizzaOrder(5, "Margherita", Arrays.asList("Mushrooms", "Onions", "Salami", "Extra Cheese"))
-    ));
+    private final PizzaOrderRepository pizzaOrderRepository;
 
     public List<PizzaOrder> getPizzaOrders() {
-        return PIZZA_ORDERS;
+        return pizzaOrderRepository.findAll();
+    }
+
+    public List<PizzaOrder> findWithAdditionalIngredient(String ingredientName) {
+        return pizzaOrderRepository.findAllByAdditionalIngredientsContains(ingredientName);
+    }
+
+    public List<PizzaOrder> findPizzaOrderByNameEquals(String pizzaName) {
+        return pizzaOrderRepository.findPizzaOrdersByNameEqualsOrderByIdDesc(pizzaName);
     }
 
     public Integer create(PizzaOrder pizzaOrder) {
@@ -31,7 +32,7 @@ public class PizzaOrderService {
         if (!isAvailable) {
             throw new IllegalStateException("Pizza " + pizzaOrder.getName() + " is out of stock.");
         }
-        PIZZA_ORDERS.add(pizzaOrder);
-        return pizzaOrder.getId();
+        PizzaOrder savedPizzaOrder = pizzaOrderRepository.save(pizzaOrder);
+        return savedPizzaOrder.getId();
     }
 }

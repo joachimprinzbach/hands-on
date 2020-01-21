@@ -1,12 +1,12 @@
 package com.baloise.springfundamentals.handson;
 
+import com.baloise.springfundamentals.handson.persistence.PizzaOrder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("pizza-orders")
@@ -18,12 +18,14 @@ public class PizzaOrderController {
     @GetMapping
     public List<PizzaOrder> getPizzaOrders(@RequestParam Optional<String> pizzaName) {
         if (pizzaName.isPresent()) {
-            return this.pizzaOrderService.getPizzaOrders()
-                    .stream()
-                    .filter(o -> o.getName().equals(pizzaName))
-                    .collect(Collectors.toList());
+            return this.pizzaOrderService.findPizzaOrderByNameEquals(pizzaName.get());
         }
         return this.pizzaOrderService.getPizzaOrders();
+    }
+
+    @GetMapping("/with-ingredients/{ingredientName}")
+    public List<PizzaOrder> getPizzaOrders(@PathVariable String ingredientName) {
+        return this.pizzaOrderService.findWithAdditionalIngredient(ingredientName);
     }
 
     @GetMapping("/{id}")

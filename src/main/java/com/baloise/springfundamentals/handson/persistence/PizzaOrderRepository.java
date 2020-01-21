@@ -9,6 +9,8 @@ import java.util.List;
 @Repository
 public interface PizzaOrderRepository extends JpaRepository<PizzaOrder, Integer> {
 
-    @Query("select PizzaOrder from PizzaOrder u, PizzaOrderItem i where u.id = i.pizzaOrder.id and i.name = ?1")
-    List<PizzaOrder> findCustomByPizzaOrderItemName(String name);
+    @Query("select o from PizzaOrder o where :name in elements(o.additionalIngredients)")
+    List<PizzaOrder> findAllByAdditionalIngredientsContains(String name);
+
+    List<PizzaOrder> findPizzaOrdersByNameEqualsOrderByIdDesc(String name);
 }
