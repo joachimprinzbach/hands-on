@@ -1,7 +1,7 @@
 package com.baloise.springfundamentals.handson;
 
 import com.baloise.springfundamentals.handson.inventory.PizzaInventoryService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -10,14 +10,10 @@ import java.util.Collections;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class PizzaOrderService {
 
     private final PizzaInventoryService pizzaInventoryService;
-
-    @Autowired
-    public PizzaOrderService(PizzaInventoryService pizzaInventoryService) {
-        this.pizzaInventoryService = pizzaInventoryService;
-    }
 
     private static final List<PizzaOrder> PIZZA_ORDERS = new ArrayList<>(Arrays.asList(
             new PizzaOrder(1, "Salami", Arrays.asList("Mushrooms", "Kangaroo")),
@@ -30,13 +26,11 @@ public class PizzaOrderService {
         return PIZZA_ORDERS;
     }
 
-    public String create(PizzaOrder pizzaOrder) {
-        pizzaOrder.getPizzaOrderItems().forEach(orerItem -> {
-            boolean isAvailable = pizzaInventoryService.isAvailable(orerItem.getName());
-            if(!isAvailable) {
-                throw new IllegalStateException("Pizza " + orerItem.getName() + " is out of stock.");
-            }
-        });
+    public Integer create(PizzaOrder pizzaOrder) {
+        boolean isAvailable = pizzaInventoryService.isAvailable(pizzaOrder.getName());
+        if (!isAvailable) {
+            throw new IllegalStateException("Pizza " + pizzaOrder.getName() + " is out of stock.");
+        }
         PIZZA_ORDERS.add(pizzaOrder);
         return pizzaOrder.getId();
     }
