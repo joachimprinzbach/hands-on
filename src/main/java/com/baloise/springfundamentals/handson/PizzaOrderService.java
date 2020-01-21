@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -25,6 +26,11 @@ public class PizzaOrderService {
 
     public List<PizzaOrder> findPizzaOrderByNameEquals(String pizzaName) {
         return pizzaOrderRepository.findPizzaOrdersByNameEqualsOrderByIdDesc(pizzaName);
+    }
+
+    public PizzaOrder findPizzaOrderByNameEquals(Integer id) {
+        Optional<PizzaOrder> potentiallyFoundOrder = pizzaOrderRepository.findById(id);
+        return potentiallyFoundOrder.orElseThrow(() -> new IllegalArgumentException("Order with id: " + id + " not found."));
     }
 
     public Integer create(PizzaOrder pizzaOrder) {

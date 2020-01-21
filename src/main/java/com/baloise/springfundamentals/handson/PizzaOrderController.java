@@ -30,11 +30,7 @@ public class PizzaOrderController {
 
     @GetMapping("/{id}")
     public PizzaOrder getPizzaOrderById(@PathVariable String id) {
-        return this.pizzaOrderService.getPizzaOrders()
-                .stream()
-                .filter(o -> o.getId().equals(Integer.parseInt(id)))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("Order with id: " + id + " not found."));
+        return this.pizzaOrderService.findPizzaOrderByNameEquals(Integer.parseInt(id));
     }
 
     @PostMapping
