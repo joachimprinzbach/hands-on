@@ -1,23 +1,27 @@
-package com.baloise.springfundamentals.handson;
+package com.baloise.springfundamentals.handson.persistence;
 
+import javax.persistence.*;
 import java.util.List;
 import java.util.Objects;
 
+@Entity
+@Table(name = "pizzaOrders")
 public class PizzaOrder {
 
-    private String id;
+    @Id
+    @GeneratedValue
+    private Integer id;
+    @OneToMany(mappedBy = "pizzaOrder", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<PizzaOrderItem> pizzaOrderItems;
 
-    public PizzaOrder(String id, List<PizzaOrderItem> pizzaOrderItems) {
-        this.id = id;
-        this.pizzaOrderItems = pizzaOrderItems;
+    public PizzaOrder() {
     }
 
-    public String getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

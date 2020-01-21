@@ -1,45 +1,48 @@
 package com.baloise.springfundamentals.handson;
 
 import com.baloise.springfundamentals.handson.inventory.PizzaInventoryService;
+import com.baloise.springfundamentals.handson.persistence.PizzaOrder;
+import com.baloise.springfundamentals.handson.persistence.PizzaOrderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class PizzaOrderService {
 
     private final PizzaInventoryService pizzaInventoryService;
+    private final PizzaOrderRepository pizzaOrderRepository;
 
     @Autowired
-    public PizzaOrderService(PizzaInventoryService pizzaInventoryService) {
+    public PizzaOrderService(PizzaInventoryService pizzaInventoryService, PizzaOrderRepository pizzaOrderRepository) {
         this.pizzaInventoryService = pizzaInventoryService;
+        this.pizzaOrderRepository = pizzaOrderRepository;
     }
-
-    private static final List<PizzaOrder> PIZZA_ORDERS = new ArrayList<>(Arrays.asList(
-            new PizzaOrder("1", Arrays.asList(
-                    new PizzaOrderItem("Salami", 2),
-                    new PizzaOrderItem("Funghi", 1)
-            )),
-            new PizzaOrder("2", Arrays.asList(
-                    new PizzaOrderItem("Prosciutto & Pineapple", 1)
-            )))
-    );
 
     public List<PizzaOrder> getPizzaOrders() {
-        return PIZZA_ORDERS;
+        return pizzaOrderRepository.findAll();
     }
 
-    public String create(PizzaOrder pizzaOrder) {
-        pizzaOrder.getPizzaOrderItems().forEach(orerItem -> {
-            boolean isAvailable = pizzaInventoryService.isAvailable(orerItem.getName());
-            if(!isAvailable) {
-                throw new IllegalStateException("Pizza " + orerItem.getName() + " is out of stock.");
+    public List<PizzaOrder> findByPizzaOrderItemName(String name) {
+        return pizzaOrderRepository.findCustomByPizzaOrderItemName(name);
+    }
+
+    public PizzaOrder getById(Integer id) {
+        Optional<PizzaOrder> potentiallyFoundPizzaOrder = pizzaOrderRepository.findById(id);
+        return potentiallyFoundPizzaOrder.orElseThrow(() -> new IllegalArgumentException("Order with id: " + id + " not found."));
+    }
+
+    public Integer create(PizzaOrder pizzaOrder) {
+        pizzaOrder.getPizzaOrderItems().forEach(orderItem -> {
+            boolean isAvailable = pizzaInventoryService.isAvailable(orderItem.getName());
+            if (!isAvailable) {
+                throw new IllegalStateException("Pizza " + orderItem.getName() + " is out of stock.");
             }
+            orderItem.setPizzaOrder(pizzaOrder);
         });
-        PIZZA_ORDERS.add(pizzaOrder);
-        return pizzaOrder.getId();
+        PizzaOrder savedOrder = pizzaOrderRepository.save(pizzaOrder);
+        return savedOrder.getId();
     }
 }

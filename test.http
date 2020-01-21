@@ -2,7 +2,6 @@ POST http://localhost:8080/pizza-orders
 Content-Type: application/json
 
 {
-  "id": "3",
   "pizzaOrderItems": [
     {
       "name": "Prosciutto & Pineapple",
