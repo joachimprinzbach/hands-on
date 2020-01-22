@@ -20,7 +20,7 @@ public class PizzaOrderController {
         if (pizzaName.isPresent()) {
             return this.pizzaOrderService.getPizzaOrders()
                     .stream()
-                    .filter(o -> o.getName().equals(pizzaName))
+                    .filter(o -> o.getName().equals(pizzaName.get()))
                     .collect(Collectors.toList());
         }
         return this.pizzaOrderService.getPizzaOrders();
